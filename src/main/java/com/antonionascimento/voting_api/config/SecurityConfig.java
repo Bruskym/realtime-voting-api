@@ -26,45 +26,45 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 
 
-    @Configuration
-    @EnableWebSecurity
-    @EnableMethodSecurity
-    public class SecurityConfig {
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
+public class SecurityConfig {
 
-        @Value("${jwt.public.key}")
-        private RSAPublicKey publicKey;
+    @Value("${jwt.public.key}")
+    private RSAPublicKey publicKey;
 
-        @Value("${jwt.private.key}")
-        private RSAPrivateKey privateKey;
+    @Value("${jwt.private.key}")
+    private RSAPrivateKey privateKey;
 
-        @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
-            httpSecurity.authorizeHttpRequests(authorize -> authorize
-            .requestMatchers(HttpMethod.POST, "/login/**", "/users/register").permitAll()
-            .anyRequest().authenticated())
-            .csrf( crsf -> crsf.disable())
-            .cors(cors -> cors.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-            
-            return httpSecurity.build();
-        }
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
+        httpSecurity.authorizeHttpRequests(authorize -> authorize
+        .requestMatchers(HttpMethod.POST, "/login/**", "/users/register").permitAll()
+        .anyRequest().authenticated())
+        .csrf( crsf -> crsf.disable())
+        .cors(cors -> cors.disable())
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        @Bean
-        public BCryptPasswordEncoder bCryptPasswordEncoder(){
-            return new BCryptPasswordEncoder();
-        }
-
-        @Bean 
-        public JwtDecoder jwtDecoder(){
-            return NimbusJwtDecoder.withPublicKey(publicKey).build();
-        }
-
-        @Bean
-        public JwtEncoder jwtEncoder(){
-            JWK jwk = new RSAKey.Builder(publicKey).privateKey(privateKey).build();
-            JWKSource<SecurityContext> jwkSource = new ImmutableJWKSet<>(new JWKSet(jwk));
-
-            return new NimbusJwtEncoder(jwkSource);
-        }
-
+        return httpSecurity.build();
     }
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean 
+    public JwtDecoder jwtDecoder(){
+        return NimbusJwtDecoder.withPublicKey(publicKey).build();
+    }
+
+    @Bean
+    public JwtEncoder jwtEncoder(){
+        JWK jwk = new RSAKey.Builder(publicKey).privateKey(privateKey).build();
+        JWKSource<SecurityContext> jwkSource = new ImmutableJWKSet<>(new JWKSet(jwk));
+
+        return new NimbusJwtEncoder(jwkSource);
+    }
+
+}
