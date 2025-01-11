@@ -16,6 +16,11 @@ CREATE TABLE IF NOT EXISTS tb_user_roles(
     PRIMARY KEY(user_id, role_id)
 );
 
+CREATE TABLE IF NOT EXISTS tb_candidateS(
+    id UUID NOT NULL,
+    name VARCHAR(50) NOT NULL
+);
+
 ALTER TABLE tb_user_roles
 ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES tb_users(id) ON DELETE CASCADE;
 

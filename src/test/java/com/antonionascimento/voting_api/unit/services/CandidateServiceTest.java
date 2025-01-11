@@ -6,6 +6,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -26,8 +27,8 @@ public class CandidateServiceTest {
     public class getCandidate{
 
         List<Candidate> mockedCandidates = List.of(
-            new Candidate(1l, "candidate1"),
-            new Candidate(2l, "candidate2")
+            new Candidate(UUID.randomUUID(), "candidate1"),
+            new Candidate(UUID.randomUUID(), "candidate2")
         );
 
         @Mock

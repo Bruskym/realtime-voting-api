@@ -25,24 +25,19 @@ public class Role {
 
     public enum roleType{
         
-        ADMIN(1l, "ADMIN"),
-        USER(2l, "USER");
+        ADMIN(1l),
+        USER(2l);
 
         private final long roleId;
-        private final String name;
          
-        roleType(long roleId, String name){
+        roleType(long roleId){
             this.roleId = roleId;
-            this.name = name;
         }
 
         public long getRoleId() {
             return roleId;
         }
 
-        public String getName() {
-            return name;
-        }
     }
 
 }

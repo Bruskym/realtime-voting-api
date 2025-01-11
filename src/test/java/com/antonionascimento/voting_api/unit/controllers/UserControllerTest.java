@@ -18,13 +18,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import com.antonionascimento.voting_api.config.JwtConfigTest;
 import com.antonionascimento.voting_api.config.SecurityConfig;
 import com.antonionascimento.voting_api.controllers.UserController;
 import com.antonionascimento.voting_api.dtos.requests.RegisterRequestDTO;
 import com.antonionascimento.voting_api.service.UserService;
 
 @WebMvcTest(UserController.class)
-@Import({SecurityConfig.class})
+@Import({SecurityConfig.class, JwtConfigTest.class})
 public class UserControllerTest {
 
     @Autowired

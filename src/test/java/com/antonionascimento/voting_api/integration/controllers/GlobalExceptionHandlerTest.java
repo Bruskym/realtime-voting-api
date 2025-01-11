@@ -25,9 +25,10 @@ import com.antonionascimento.voting_api.exceptions.ConflictException;
 import com.antonionascimento.voting_api.exceptions.UnauthorizedException;
 import com.antonionascimento.voting_api.service.LoginService;
 import com.antonionascimento.voting_api.service.UserService;
+import com.antonionascimento.voting_api.config.JwtConfigTest;
 
 @WebMvcTest({LoginController.class, UserController.class})
-@Import({SecurityConfig.class, GlobalExceptionHandlerConfig.class})
+@Import({SecurityConfig.class, GlobalExceptionHandlerConfig.class, JwtConfigTest.class})
 public class GlobalExceptionHandlerTest {
     
     @Autowired
