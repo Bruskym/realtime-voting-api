@@ -25,7 +25,7 @@ public class GlobalExceptionHandlerConfig extends ResponseEntityExceptionHandler
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<Object> handleAllAccessDeniedException(AccessDeniedException exception) {
+    public ResponseEntity<Object> allAccessDeniedExceptionHandler(AccessDeniedException exception) {
         return ErrorResponseBuilder.builder()
             .status(HttpStatus.FORBIDDEN)
             .message("You do not have permission to access this resource.")
