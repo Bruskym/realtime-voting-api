@@ -13,6 +13,11 @@ spring:
             hibernate:
                 '[format_sql]': true
                 dialect: org.hibernate.dialect.PostgreSQLDialect
+    rabbitmq:
+        host: <HOST>
+        port: 5672
+        username: <RABBITMQ_USER>
+        password: <RABBITMQ_PASSWORD>
 
 jwt:
     public:

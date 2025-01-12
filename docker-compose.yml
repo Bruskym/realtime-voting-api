@@ -11,5 +11,15 @@ services:
       - db_data:/var/lib/postgresql/data
       - ./db/scripts:/scripts/
 
+  queue:
+    image: rabbitmq:4.0-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    
+
 volumes:
   db_data:
