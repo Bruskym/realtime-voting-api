@@ -11,7 +11,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -26,7 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import com.antonionascimento.voting_api.config.TestConfigTest;
+import com.antonionascimento.voting_api.config.PermissionTestConfigTest;
 import com.antonionascimento.voting_api.controllers.CandidateController;
 import com.antonionascimento.voting_api.dtos.requests.RegisterCandidateRequestDTO;
 import com.antonionascimento.voting_api.entities.Candidate;
@@ -38,7 +37,7 @@ import com.antonionascimento.voting_api.service.CandidateService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(CandidateController.class)
-@Import(TestConfigTest.class)
+@Import(PermissionTestConfigTest.class)
 public class CandidateControllerTest {
     
     @MockitoBean
@@ -49,9 +48,6 @@ public class CandidateControllerTest {
 
     @Autowired
     JWTsigner jwtSigner;
-
-    @Autowired
-    JwtEncoder jwtEncoder;
 
     private User createUser(String username, String password, Role role) {
         User user = new User();

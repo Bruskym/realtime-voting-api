@@ -8,4 +8,4 @@ import com.antonionascimento.voting_api.security.JWTsignerImpl;
     JwtConfigTest.class, 
     GlobalExceptionHandlerConfig.class,
     JWTsignerImpl.class})
-public class TestConfigTest {}
+public class PermissionTestConfigTest {}
