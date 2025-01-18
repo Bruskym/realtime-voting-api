@@ -5,40 +5,66 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Set;
+import java.util.UUID;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import com.antonionascimento.voting_api.config.GlobalExceptionHandlerConfig;
-import com.antonionascimento.voting_api.config.SecurityConfig;
+import com.antonionascimento.voting_api.controllers.CandidateController;
 import com.antonionascimento.voting_api.controllers.LoginController;
 import com.antonionascimento.voting_api.controllers.UserController;
 import com.antonionascimento.voting_api.dtos.requests.LoginRequestDTO;
+import com.antonionascimento.voting_api.dtos.requests.RegisterCandidateRequestDTO;
 import com.antonionascimento.voting_api.dtos.requests.RegisterRequestDTO;
+import com.antonionascimento.voting_api.entities.Role;
+import com.antonionascimento.voting_api.entities.User;
 import com.antonionascimento.voting_api.exceptions.ConflictException;
 import com.antonionascimento.voting_api.exceptions.UnauthorizedException;
+import com.antonionascimento.voting_api.security.JWTsigner;
+import com.antonionascimento.voting_api.service.CandidateService;
 import com.antonionascimento.voting_api.service.LoginService;
 import com.antonionascimento.voting_api.service.UserService;
-import com.antonionascimento.voting_api.config.JwtConfigTest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.antonionascimento.voting_api.config.PermissionTestConfigTest;
 
-@WebMvcTest({LoginController.class, UserController.class})
-@Import({SecurityConfig.class, GlobalExceptionHandlerConfig.class, JwtConfigTest.class})
+@WebMvcTest({LoginController.class, UserController.class, CandidateController.class})
+@Import(PermissionTestConfigTest.class)
 public class GlobalExceptionHandlerTest {
     
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    JWTsigner jwtSigner;
 
     @MockitoBean
     LoginService loginService;
 
     @MockitoBean
     UserService userService;
+
+    @MockitoBean
+    CandidateService candidateService;
+
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    private User createUser(String username, String password, Role role) {
+        User user = new User();
+        user.setId(UUID.randomUUID());
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setRoles(Set.of(role));
+        return user;
+    }
 
     @Test
     @DisplayName("should return 401 when UserUnauthorized is thrown")
@@ -48,7 +74,7 @@ public class GlobalExceptionHandlerTest {
         doThrow(new UnauthorizedException("Invalid credentials")).when(loginService).authenticate(loginRequestDTO);
 
         ResultActions response = mockMvc.perform(post("/login")
-        .content(loginRequestDTO.toJsonString())
+        .content(objectMapper.writeValueAsString(loginRequestDTO))
         .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(status().isUnauthorized())
@@ -63,11 +89,27 @@ public class GlobalExceptionHandlerTest {
         doThrow(new ConflictException("user already exists")).when(userService).registerUser(registerRequestDTO);
 
         ResultActions response = mockMvc.perform(post("/users/register")
-        .content(registerRequestDTO.toJsonString())
+        .content(objectMapper.writeValueAsString(registerRequestDTO))
         .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(status().isConflict())
         .andExpect(jsonPath("$.message").value("user already exists"));
     }
 
+    @Test
+    @DisplayName("should return 403 when ForbiddenException is thrown")
+    public void shoudReturn403WhenForbiddenExceptionIsThrown() throws Exception{
+        Role forbiddenRole = new Role(Role.roleType.USER.getRoleId(), Role.roleType.USER.name());
+        User user = createUser("forbiddenUser", "12345", forbiddenRole);
+        String token = jwtSigner.sign(user, 300l);
+        
+        RegisterCandidateRequestDTO registerCandidateRequestDTO = new RegisterCandidateRequestDTO("candidate");
+
+        ResultActions response = mockMvc.perform(post("/candidates")
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+        .content(objectMapper.writeValueAsString(registerCandidateRequestDTO))
+        .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(status().isForbidden());
+    }
 }
