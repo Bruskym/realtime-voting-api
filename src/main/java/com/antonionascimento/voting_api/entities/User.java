@@ -1,5 +1,6 @@
 package com.antonionascimento.voting_api.entities;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -11,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,5 +44,8 @@ public class User {
     inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
+
+    @OneToMany(mappedBy = "user")
+    private List<Vote> vote;
 
 }
