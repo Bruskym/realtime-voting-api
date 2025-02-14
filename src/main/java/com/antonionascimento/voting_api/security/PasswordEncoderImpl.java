@@ -17,5 +17,9 @@ public class PasswordEncoderImpl implements PasswordEncoder{
     public String encode(String password) {
         return bCryptPasswordEncoder.encode(password);
     }
-    
+
+    @Override
+    public Boolean matches(String password, String encodedPassword) {
+        return bCryptPasswordEncoder.matches(password, encodedPassword);
+    }
 }

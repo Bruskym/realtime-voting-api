@@ -18,7 +18,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.antonionascimento.voting_api.dtos.requests.LoginRequestDTO;
 import com.antonionascimento.voting_api.entities.Role;
@@ -26,6 +25,7 @@ import com.antonionascimento.voting_api.entities.User;
 import com.antonionascimento.voting_api.exceptions.UnauthorizedException;
 import com.antonionascimento.voting_api.repository.UserRepository;
 import com.antonionascimento.voting_api.security.JWTsigner;
+import com.antonionascimento.voting_api.security.PasswordEncoder;
 import com.antonionascimento.voting_api.service.impl.LoginServiceImpl;
 
 
@@ -39,7 +39,7 @@ public class LoginServiceTest {
     JWTsigner jwTsigner;
 
     @Mock
-    BCryptPasswordEncoder bCryptPasswordEncoder;
+    PasswordEncoder passwordEncoder;
 
     @InjectMocks
     LoginServiceImpl loginService;
@@ -68,7 +68,7 @@ public class LoginServiceTest {
             LoginRequestDTO loginRequestDTO = new LoginRequestDTO("User", "passUser");
 
             doReturn(Optional.of(mockedUser)).when(userRepository).findByUsername(loginRequestDTO.username());
-            doReturn(true).when(bCryptPasswordEncoder).matches(loginRequestDTO.password(), mockedUser.getPassword());
+            doReturn(true).when(passwordEncoder).matches(loginRequestDTO.password(), mockedUser.getPassword());
             doReturn("JwtToken").when(jwTsigner).sign(mockedUser, 300l);
 
             String token = loginService.authenticate(loginRequestDTO);
@@ -85,7 +85,7 @@ public class LoginServiceTest {
             assertThrows(UnauthorizedException.class,
             () -> loginService.authenticate(loginRequestDTO));
 
-            verify(bCryptPasswordEncoder, times(0)).matches(any(), any());
+            verify(passwordEncoder, times(0)).matches(any(), any());
             verify(jwTsigner, times(0)).sign(any(), any());
         }
 
@@ -96,7 +96,7 @@ public class LoginServiceTest {
             LoginRequestDTO loginRequestDTO = new LoginRequestDTO("User", "passUser");
             
             doReturn(Optional.of(mockedUser)).when(userRepository).findByUsername(loginRequestDTO.username());
-            doReturn(false).when(bCryptPasswordEncoder).matches(loginRequestDTO.password(), 
+            doReturn(false).when(passwordEncoder).matches(loginRequestDTO.password(), 
             mockedUser.getPassword());
 
             assertThrows(UnauthorizedException.class,
