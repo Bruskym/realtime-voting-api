@@ -11,6 +11,7 @@ import com.antonionascimento.voting_api.exceptions.ConflictException;
 import com.antonionascimento.voting_api.exceptions.UnauthorizedException;
 import com.antonionascimento.voting_api.exceptions.response.ErrorResponseBuilder;
 
+
 @ControllerAdvice
 public class GlobalExceptionHandlerConfig extends ResponseEntityExceptionHandler{
 

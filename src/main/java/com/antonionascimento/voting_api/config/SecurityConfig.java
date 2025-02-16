@@ -12,21 +12,25 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-
+    
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, 
+    HandlerExceptionResolver handlerExceptionResolver) throws Exception{
         httpSecurity.authorizeHttpRequests(authorize -> authorize
         .requestMatchers(HttpMethod.POST, "/login/**", "/users/register").permitAll()
         .anyRequest().authenticated())
         .csrf(crsf -> crsf.disable())
         .cors(cors -> cors.disable())
         .oauth2ResourceServer(oauth2 -> oauth2
-        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
+            .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+            .authenticationEntryPoint(new CustomAuthenticationEntryPoint(handlerExceptionResolver))
+        )
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return httpSecurity.build();
