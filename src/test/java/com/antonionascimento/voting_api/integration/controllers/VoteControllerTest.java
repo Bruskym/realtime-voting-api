@@ -84,8 +84,8 @@ public class VoteControllerTest {
         }
 
         @Test
-        @DisplayName("should return 401 if user not registered vote")
-        public void shouldReturn401IfUserNotRegisteredVote() throws Exception{
+        @DisplayName("should deny vote when user is not registered")
+        public void shouldDenyVoteWhenUserIsNotRegistered() throws Exception{
 
             ResultActions perform = mockMvc.perform(post("/vote")
                             .contentType("application/json")
