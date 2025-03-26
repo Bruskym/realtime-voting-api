@@ -23,9 +23,11 @@ import com.antonionascimento.voting_api.config.SecurityConfig;
 import com.antonionascimento.voting_api.controllers.UserController;
 import com.antonionascimento.voting_api.dtos.requests.RegisterRequestDTO;
 import com.antonionascimento.voting_api.service.UserService;
+import com.antonionascimento.voting_api.utils.MessageSerializer;
+import com.antonionascimento.voting_api.utils.Impl.JacksonJsonMessageSerializer;
 
 @WebMvcTest(UserController.class)
-@Import({SecurityConfig.class, JwtConfigTest.class})
+@Import({SecurityConfig.class, JwtConfigTest.class, JacksonJsonMessageSerializer.class})
 public class UserControllerTest {
 
     @Autowired
@@ -33,6 +35,9 @@ public class UserControllerTest {
 
     @MockitoBean
     UserService userService;
+
+    @Autowired
+    MessageSerializer messageSerializer;
 
     @Nested
     public class testRegisterUser{
@@ -47,7 +52,7 @@ public class UserControllerTest {
             doReturn(mockedId).when(userService).registerUser(registerRequestDTO);
 
             ResultActions result = mockMvc.perform(post("/users/register")
-            .content(registerRequestDTO.toJsonString())
+            .content(messageSerializer.serialize(registerRequestDTO))
             .contentType(MediaType.APPLICATION_JSON));
 
             result.andExpect(status().isCreated())
