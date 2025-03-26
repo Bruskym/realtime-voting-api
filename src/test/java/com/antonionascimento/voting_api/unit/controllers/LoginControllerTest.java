@@ -16,6 +16,8 @@ import com.antonionascimento.voting_api.config.SecurityConfig;
 import com.antonionascimento.voting_api.controllers.LoginController;
 import com.antonionascimento.voting_api.dtos.requests.LoginRequestDTO;
 import com.antonionascimento.voting_api.service.LoginService;
+import com.antonionascimento.voting_api.utils.MessageSerializer;
+import com.antonionascimento.voting_api.utils.Impl.JacksonJsonMessageSerializer;
 
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -24,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(LoginController.class)
-@Import({SecurityConfig.class, JwtConfigTest.class})
+@Import({SecurityConfig.class, JwtConfigTest.class, JacksonJsonMessageSerializer.class})
 public class LoginControllerTest {
 
     @Autowired
@@ -32,6 +34,9 @@ public class LoginControllerTest {
 
     @MockitoBean
     LoginService loginService;
+
+    @Autowired
+    MessageSerializer messageSerializer;
     
     @Nested
     public class testLoginUser{
@@ -47,7 +52,7 @@ public class LoginControllerTest {
 
             // Act
             ResultActions result = mockMvc.perform(post("/login")
-            .content(loginRequestDTO.toJsonString())
+            .content(messageSerializer.serialize(loginRequestDTO))
             .contentType(MediaType.APPLICATION_JSON));
 
             // Assert
